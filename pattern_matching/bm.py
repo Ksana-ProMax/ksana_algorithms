@@ -27,10 +27,12 @@ def build_delta1_table(pattern: str) -> dict[str, int]:
 def build_delta2_table(pattern: str) -> list[int]:
     """
     构建good suffix表 (delta 2)
+    deepseek写的, 应该是正确的
     表内的元素为不匹配发生时前进的距离
 
     Example:
-        匹配的后3个元素为 ABC, 那么需要在pattern找到除了匹配以外, 其他的ABC的地方
+        匹配的后3个元素为 ?ABC, 那么需要在 pattern 找到除了匹配以外, 
+        其他的 *ABC 的地方，并且 *ABC 和 ?ABC, *的元素需要和?的元素不一样
         然后让 ABC 与文本的 ABC 对齐
     """
     len_pattern = len(pattern)
@@ -65,7 +67,7 @@ def build_delta2_table(pattern: str) -> list[int]:
     return table
 
 
-def bm_search_all(text: str, pattern: str):
+def bm_search(text: str, pattern: str):
     """
     查找所有匹配位置
     """
@@ -109,8 +111,8 @@ def bm_search_all(text: str, pattern: str):
             # 比较, 取较大的移动距离
             s_from_delta1 = delta_1_table[char] if char in delta_1_table else len_pattern
             s_from_delta2 = delta_2_table[j + 1]
-            print(f"根据表1, 前进{s_from_delta1}, 根据表2, 前进{s_from_delta2}")
             s = max(s_from_delta1, s_from_delta2)
+            print(f"根据表1, 前进{s_from_delta1}, 根据表2, 前进{s_from_delta2}, 最终: 前进{s}")
 
             i += s
         print("\n")
@@ -119,10 +121,10 @@ def bm_search_all(text: str, pattern: str):
 
 
 if __name__ == "__main__":
-    text = "abcababaa"
-    pattern = "cabab"
+    text = "aaabaaaaabaa"
+    pattern = "aabaa"
     print(f"文本: {text}")
     print(f"模式: {pattern}")
 
-    all_positions = bm_search_all(text, pattern)
+    all_positions = bm_search(text, pattern)
     print(f"所有位置: {all_positions}")
