@@ -37,7 +37,7 @@ def build_delta2_table(pattern: str) -> list[int]:
     """
     len_pattern = len(pattern)
 
-    table: list[int] = [0 for _ in range(len_pattern+1)]
+    table: list[int] = [0 for _ in range(len_pattern+1)]    # 数组的长度可以为 len_pattern, 而并非一定要 len_pattern+1
     fail: list[int] = [0 for _ in range(len_pattern)] + [len_pattern + 1]
 
     i = len_pattern
