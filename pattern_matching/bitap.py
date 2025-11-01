@@ -4,9 +4,6 @@ Bitap算法
 """
 
 
-from email.policy import default
-
-
 def build_dict_B(text: str):
     """
     构造长度为 len(text) 的映射 B
@@ -59,9 +56,8 @@ def bitap_search(text: str, pattern: str) -> list:
 
 
 if __name__ == "__main__":
-    # 使用论文中的例子
-    text = "baaabab"
-    pattern = "aab"
+    text = "abcabbcca"
+    pattern = "bc"
 
     print(f"文本: {text}")
     print(f"模式: {pattern}")
