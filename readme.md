@@ -8,6 +8,7 @@ python版本为3.12.11
 - [Boyer-Moore算法](pattern_matching/bm.py)
 - [Rabin-Karp算法](pattern_matching/rk.py)
 - [Bitap算法(shift-or/shift-and)](pattern_matching/bitap.py)
+- [Aho-Corasick算法](pattern_matching/ac.py)
 
 ### 字符串近似匹配
 - [Edit Distance](fuzzy_string_search/ed.py)
