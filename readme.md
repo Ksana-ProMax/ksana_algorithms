@@ -9,6 +9,7 @@ python版本为3.12.11
 - [Rabin-Karp算法](pattern_matching/rk.py)
 - [Bitap算法(shift-or/shift-and)](pattern_matching/bitap.py)
 - [Aho-Corasick算法](pattern_matching/ac.py)
+- [Suffix Automation](pattern_matching/sa.py)
 
 ### 字符串近似匹配
 - [Edit Distance](fuzzy_string_search/ed.py)
