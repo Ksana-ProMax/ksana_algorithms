@@ -64,9 +64,10 @@ class SuffixAutomaton:
 
                 # 复制 next
                 q_copy.next = deepcopy(self.states[q].next)
-                while p != -1 and self.states[p].next.get(char) == q:
-                    self.states[p].next[char] = new_q_index
-                    p = self.states[p].link
+                state_p = self.states[p]
+                while p != -1 and state_p.next.get(char) == q:
+                    state_p.next[char] = new_q_index    # 修改被复制节点相关的跳转
+                    state_p = self.states[state_p.link]
 
                 # 重新设置 suffix link
                 self.states[q].link = new_q_index
