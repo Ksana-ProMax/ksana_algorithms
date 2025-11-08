@@ -21,8 +21,8 @@ def maximal_suffix(x: str, reverse=False):
     i, j, k, p = 0, 1, 0, 1
 
     while j + k < n:
-        a_prime = x[i + k] * (-1 if reverse else 1)
-        a = x[j + k] * (-1 if reverse else 1)
+        a_prime = ord(x[i + k]) * (-1 if reverse else 1)
+        a = ord(x[j + k]) * (-1 if reverse else 1)
         if a < a_prime:
             j = j + k + 1
             k = 0
@@ -103,7 +103,7 @@ def positions_bis(text: str, pattern: str) -> list[int]:
 
 if __name__ == "__main__":
     text = "caabbaabbacabc"
-    pattern = "abbaa"
+    pattern = "babcb"
     print(f"文本: {text}")
     print(f"模式: {pattern}")
 
