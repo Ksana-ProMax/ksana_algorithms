@@ -103,7 +103,6 @@ class FibonacciHeap:
                     self.min = child
                 else:
                     self.add_right(self.min, child)
-            # z.child = None
 
         # 如果最顶端只有一个节点, 那么移除了这个节点之后 heap 就是空的
         if z.right == z:
@@ -126,22 +125,24 @@ class FibonacciHeap:
         if self.min is None:
             return
 
-        A = dict()
+        # 这里也可以用 array 来实现
+        map: dict[int, Node] = {}
+
         roots = self.min.sibs()
         for w in roots:
             x = w
             d = x.degree
-            while d in A:
-                y = A.pop(d)
+            while d in map:
+                y = map.pop(d)
                 # 让更小的那个节点 y 成为 x 的子节点
                 self.link(y if y.key > x.key else x,
                           x if y.key > x.key else y)
                 d = x.degree
-            A[d] = x
+            map[d] = x
 
         # 重建 root list
         self.min = None
-        for node in A.values():
+        for node in map.values():
             node.left = node.right = node
             if self.min is None:
                 self.min = node
