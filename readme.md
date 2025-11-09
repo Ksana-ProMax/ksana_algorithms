@@ -20,4 +20,5 @@ python版本为3.12.11
 
 ## 数据结构
 ### 堆 Heap
-- [Binary Heap](heap/binary.py)
+- [二叉堆(Binary Heap)](heap/binary.py)
+- [斐波那契堆(Fibonacci Heap)](heap/fib.py)
