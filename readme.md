@@ -1,7 +1,7 @@
 bilibili上算法视频的相关代码
 python版本为3.12.11
 
-## 目录
+## 算法
 ### 模式匹配 Pattern Matching
 - [KMP(Knuth-Morris-Pratt)算法](pattern_matching/kmp.py)
 - [Horspool(boyer-moore-horspool)算法](pattern_matching/bmh.py)
@@ -17,3 +17,7 @@ python版本为3.12.11
 
 ### 寻路算法 Path Finding
 - [BFS搜索](pathfinding/bfs.py)
+
+## 数据结构
+### 堆 Heap
+- [Binary Heap](heap/binary.py)
