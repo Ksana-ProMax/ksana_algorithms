@@ -22,3 +22,4 @@ python版本为3.12.11
 ### 堆 Heap
 - [二叉堆(Binary Heap)](heap/binary.py)
 - [斐波那契堆(Fibonacci Heap)](heap/fib.py)
+- [配对堆(Pairing Heap)](heap/pairing.py)
