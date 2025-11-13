@@ -39,13 +39,13 @@ def d_find_path(grid: numpy.ndarray, move: Literal["4way", "8way"]) -> Optional[
     else:
         return None
 
-    # 节点的值，初始化所有节点值为 -无穷，除了起点的值为0
+    # 节点的值，初始化所有节点值为无穷，除了起点的值为0
     dist = numpy.full((rows, cols), numpy.inf)
     dist[start] = 0
 
     prev = {start: None}    # 跳转表
     heap: list[tuple[float, Point]] = [(0.0, start)]  # binary-heap
-    visited = numpy.zeros((rows, cols), dtype=bool)
+    visited = numpy.full((rows, cols), fill_value=False, dtype=bool)  # 已访问过的节点, true 代表已经访问过
 
     while heap:
         # 每次获取的都是最小值的节点
