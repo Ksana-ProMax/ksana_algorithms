@@ -18,6 +18,7 @@ python版本为3.12.11
 ### 寻路算法 Path Finding
 - [BFS搜索](pathfinding/bfs.py)
 - [Dijkstra算法](pathfinding/dijkstra.py)
+- [Conflict-Based Search](pathfinding/cbs.py)
 
 ## 数据结构
 ### 堆 Heap
