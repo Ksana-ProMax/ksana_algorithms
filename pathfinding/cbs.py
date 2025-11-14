@@ -85,8 +85,8 @@ class CBS:
         assert self.rows > 0 and self.cols > 0
 
         self.starts: list[Point] = starts
-        self.goals: list[Point] = dests
-        assert len(self.starts) == 2 and len(self.goals) == 2
+        self.dests: list[Point] = dests
+        assert len(self.starts) == 2 and len(self.dests) == 2
         # 目前只支持2个agent
         # There are two ways to handle such k-agent conflicts. We can generate k children,
         # each of which adds a constraint to k 􀀀 1 agents (i.e., each child allows only one agent to occupy the
@@ -95,7 +95,6 @@ class CBS:
         # for deeper levels of the tree.
 
         self.num_agents = len(starts)
-        self.move_type = move_type
 
         # 移动方向
         if move_type == "4way":
@@ -163,7 +162,7 @@ class CBS:
         i.e., while ignoring the other agents.
         """
         start = self.starts[agent]
-        goal = self.goals[agent]
+        goal = self.dests[agent]
 
         open_list = []
         heapq.heappush(open_list, (0, 0, start, 0, [start]))  # (f, g, position, time, path)
@@ -218,8 +217,10 @@ class CBS:
         校验所有的路径里面是否包含冲突, 如果包含冲突, 则返回冲突的位置和时间点
         - A conflict is a tuple (ai, aj, v, t) where agent ai and agent aj occupy vertex v at time point t.
 
-        注: 这里为了简化，我们只考虑顶点冲突, 即，两个角色不能站在一个顶点上
-        但是现实应用里面, 我们应该还要考虑, 两个角色不能互相穿过对方(swap位置)
+        注: 这里为了简化，我们只考虑顶点冲突(Vertex Conflict), 即，两个角色不能站在一个顶点上
+        但是现实应用里面, 我们应该还要考虑:
+            两个角色不能互相穿过对方(Swapping Conflict)
+            第一个角色的下一个位置不能是第二个角色的起始位置(Following Conflict)
         """
         solution = node.solution
         max_time = max(len(path) for path in solution.values())
@@ -281,7 +282,7 @@ if __name__ == "__main__":
         [0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0],
     ], dtype=int)
-    starts = [(0, 1), (0, 3)]
+    starts = [(0, 0), (0, 4)]
     goals = [(0, 4), (0, 0)]
 
     cbs = CBS(grid, starts, goals, "4way")
