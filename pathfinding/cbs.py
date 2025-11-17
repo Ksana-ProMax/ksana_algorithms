@@ -54,6 +54,10 @@ class Node:
     - A set of k paths, one path for each agent. The path for agent ai must be consistent with the constraints 
     of ai. Such paths are found by the lowlevel
     """
+    conflicts: list[tuple]
+    """
+    当前solution下的所有conflict, 为后续的优化算法做准备
+    """
     goal: bool
     """
     当前的节点是否为goal. 
@@ -126,20 +130,20 @@ class CBS:
             solution[agent] = path
             cost += (len(path) - 1)
 
-        root = Node(constraints=[], cost=cost, solution=solution, goal=False)
+        conflicts = self.validate(solution)
+        root = Node(constraints=[], cost=cost, solution=solution, conflicts=conflicts, goal=False)
         heapq.heappush(open, root)
 
         index = 0
         while open:
             index += 1
-
             current_node: Node = heapq.heappop(open)  # 获取 cost 最小的节点
-            conflict = self.validate(current_node)  # 校验解决方案中是否有冲突
 
-            if not conflict:
+            if not current_node.conflicts:
                 current_node.goal = True
                 return current_node.solution
             else:
+                conflict = current_node.conflicts[0]    # 选择第一个作为冲突
                 agent_i, agent_j, coord, time = conflict
 
                 # 将 conflict 分为两部分, 左侧代表了对于 agent_i 的约束条件, 右侧代表了对于 agent_j 的约束条件
@@ -150,8 +154,9 @@ class CBS:
                         solution = copy.deepcopy(current_node.solution)
                         solution[agent] = path
                     cost = sum(len(path) - 1 for path in solution.values())
+                    conflicts = self.validate(solution)
                     new_node = Node(constraints=constraints, cost=cost,
-                                    solution=solution, goal=False, parent=current_node)
+                                    solution=solution, conflicts=conflicts, goal=False, parent=current_node)
                     heapq.heappush(open, new_node)
 
             print(f"当前搜索次数: {index}, heap大小: {len(open)}", end="\r")
@@ -170,15 +175,15 @@ class CBS:
         start = self.starts[agent]
         goal = self.dests[agent]
 
-        h = []
-        heapq.heappush(h, (0, 0, start, 0, [start]))  # (f, g, position, time, path)
+        open = []
+        heapq.heappush(open, (0, 0, start, 0, [start]))  # (f, g, position, time, path)
 
         visited = {}
 
         index = 0
-        while h:
+        while open:
             index += 1
-            f, g, current, time, path = heapq.heappop(h)
+            f, g, current, time, path = heapq.heappop(open)
 
             if current == goal:
                 return path
@@ -215,12 +220,12 @@ class CBS:
                     continue
 
                 visited[state_key] = new_g
-                heapq.heappush(h, (new_f, new_g, move, next_time, new_path))
+                heapq.heappush(open, (new_f, new_g, move, next_time, new_path))
         return None
 
-    def validate(self, node: Node) -> Optional[tuple]:
+    def validate(self, solution: dict[int, list[Point]]) -> list[tuple]:
         """
-        校验所有的路径里面是否包含冲突, 如果包含冲突, 则返回冲突的位置和时间点
+        校验所有的路径里面是否包含冲突, 返回所有的冲突的位置和时间点
         - A conflict is a tuple (ai, aj, v, t) where agent ai and agent aj occupy vertex v at time point t.
 
         注: 这里为了简化，我们只考虑顶点冲突(Vertex Conflict), 即，两个角色不能站在一个顶点上
@@ -228,9 +233,8 @@ class CBS:
             两个角色不能互相穿过对方(Swapping Conflict)
             第一个角色的下一个位置不能是第二个角色的起始位置(Following Conflict)
         """
-        solution = node.solution
+        all_conflicts = []
         max_time = max(len(path) for path in solution.values())
-
         for t in range(max_time):
             occupied = {}   # 在时间点t时, 被占领的格子
 
@@ -238,10 +242,11 @@ class CBS:
                 if t < len(path):
                     pos = path[t]   # 获取 t 时间点时, agent 所处的位置
                     if pos in occupied:  # 如果所处的位置被其他 agent 所占领, 那么返回冲突
-                        return (agent, occupied[pos], pos, t)
+                        agent_j = occupied[pos]  # 与之冲突的 agent 索引
+                        all_conflicts.append((agent, agent_j, pos, t))
                     occupied[pos] = agent
 
-        return None
+        return all_conflicts
 
     def visualize(self, solution: Optional[dict[int, list[Point]]]):
         """
@@ -302,7 +307,7 @@ if __name__ == "__main__":
         [0, 0, 0, -1, -1],
         [0, -1, 0, 0, 0]
     ], dtype=int)
-    starts = [(0, 0), (3, 4)]
+    starts = [(0, 0), (4, 4)]
     goals = [(4, 4), (0, 0)]
 
     cbs = CBS(grid, starts, goals, "4way")

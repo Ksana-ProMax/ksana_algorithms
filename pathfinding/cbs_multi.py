@@ -129,15 +129,15 @@ class CBSMulti:
         start = self.starts[agent]
         dest = self.dests[agent]
 
-        open_list = []
-        heapq.heappush(open_list, (0, 0, start, 0, [start]))  # (f, g, position, time, path)
+        open = []
+        heapq.heappush(open, (0, 0, start, 0, [start]))  # (f, g, position, time, path)
 
         visited = {}
 
         index = 0
-        while open_list:
+        while open:
             index += 1
-            f, g, current, time, path = heapq.heappop(open_list)
+            f, g, current, time, path = heapq.heappop(open)
 
             if current == dest:
                 return path
@@ -174,7 +174,7 @@ class CBSMulti:
                     continue
 
                 visited[state_key] = new_g
-                heapq.heappush(open_list, (new_f, new_g, move, next_time, new_path))
+                heapq.heappush(open, (new_f, new_g, move, next_time, new_path))
         return None
 
     def validate(self, node: Node) -> Optional[tuple]:
