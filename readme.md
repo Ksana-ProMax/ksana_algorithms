@@ -24,6 +24,7 @@ numpy版本为1.26.4
 - [Dijkstra算法](pathfinding/dijkstra.py)
 - [Conflict-Based Search](pathfinding/cbs.py)
 - [Meta-Agent CBS](pathfinding/macbs.py)
+- [Multi-Valued Decision Diagram (MDD)](pathfinding/mdd.py)
 
 ## 数据结构
 ### 堆 Heap
