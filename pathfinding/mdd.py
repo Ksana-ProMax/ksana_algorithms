@@ -18,7 +18,7 @@ class Node:
     timestamp: int
     """时间点t, 同时也是层数"""
     parents: list[Self]
-    """父节点(非必要)"""
+    """父节点"""
     children: list[Self]
     """节点的子节点"""
 
@@ -37,6 +37,7 @@ class MDD:
             - move : 移动方式, 4way代表上下左右四个方向, 8way代表在4way上加入四个角方向上的移动
             - cost : 路径成本
         """
+        self.nodes = []
         self.grid = grid
         self.rows, self.cols = grid.shape
         self.start = tuple([int(elem) for elem in numpy.where(grid == 1)])
@@ -62,7 +63,7 @@ class MDD:
         assert len(self.start) == 2 and len(self.dest) == 2     # 避免语法问题
         start_node = Node(self.start, 0, [], [])
 
-        all_nodes = [start_node]
+        all_layer_nodes: list[list[Node]] = [[start_node]]  # 分层的所有节点，每一层是一个 list
         layer = [start_node]
         for t in range(self.cost):
             next_layer: list[Node] = []
@@ -78,7 +79,6 @@ class MDD:
                         if node_t_plus_1 is None:    # 创建节点
                             node_t_plus_1 = Node(next_pos, t + 1, [node_t], [])
                             next_layer.append(node_t_plus_1)  # 加入到下一层中
-                            all_nodes.append(node_t_plus_1)
                         else:    # 获取现有节点
                             if node_t not in node_t_plus_1.parents:
                                 node_t_plus_1.parents.append(node_t)
@@ -86,10 +86,24 @@ class MDD:
                         if node_t_plus_1 not in node_t.children:
                             node_t.children.append(node_t_plus_1)
             layer = next_layer
+            all_layer_nodes.append(layer)
 
         goal = next((node for node in layer if node.position == self.dest), None)
-        self.nodes = all_nodes if goal else []
 
+        if goal is None:
+            self.nodes = []
+        else:
+            # 最后一层只保留 goal 节点
+            keep_nodes: list[list[Node]] = []
+            nodes: list[Node] = [goal]
+            for t in range(self.cost+1):
+                parents = []
+                keep_nodes.append(nodes)
+                for node in nodes:
+                    parent_nodes = node.parents
+                    parents += [node for node in parent_nodes if node not in parents]
+                nodes = parents
+            self.nodes = keep_nodes[::-1]
 
 
 if __name__ == "__main__":
