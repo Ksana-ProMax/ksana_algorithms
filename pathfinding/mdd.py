@@ -2,10 +2,9 @@
 Multi-Valued Decision Diagram (MDD)
 
 The increasing cost tree search for optimal multi-agent pathfinding
-
 """
 from dataclasses import dataclass
-from typing import Literal, Optional, Self
+from typing import Literal, Self
 import numpy
 
 Point = tuple[int, int]
@@ -23,10 +22,12 @@ class Node:
     """节点的子节点"""
 
     def __repr__(self):
-        return f"Node(pos={self.position}, t={self.timestamp})"
+        return f"Node(pos={self.position}, t={self.timestamp}), c={[c.position for c in self.children]}"
 
 
 class MDD:
+    """一个不是特别高效的MDD建立方式"""
+
     def __init__(self,
                  grid: numpy.ndarray,
                  cost: int,
@@ -83,8 +84,6 @@ class MDD:
                             if node_t not in node_t_plus_1.parents:
                                 node_t_plus_1.parents.append(node_t)
 
-                        if node_t_plus_1 not in node_t.children:
-                            node_t.children.append(node_t_plus_1)
             layer = next_layer
             all_layer_nodes.append(layer)
 
@@ -101,6 +100,8 @@ class MDD:
                 keep_nodes.append(nodes)
                 for node in nodes:
                     parent_nodes = node.parents
+                    for pnode in parent_nodes:
+                        pnode.children.append(node)
                     parents += [node for node in parent_nodes if node not in parents]
                 nodes = parents
             self.nodes = keep_nodes[::-1]
@@ -115,4 +116,6 @@ if __name__ == "__main__":
         [0, -1, 0, 0, 2]
     ], dtype=int)
     mdd = MDD(grid, 10, "4way")
-    print(grid, "\n", mdd.nodes)
+    print(grid)
+    if mdd.nodes is not None:
+        print("\n".join([str(layer) for layer in mdd.nodes]))
