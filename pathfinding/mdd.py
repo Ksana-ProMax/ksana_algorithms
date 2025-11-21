@@ -62,6 +62,7 @@ class MDD:
         assert len(self.start) == 2 and len(self.dest) == 2     # 避免语法问题
         start_node = Node(self.start, 0, [], [])
 
+        all_nodes = [start_node]
         layer = [start_node]
         for t in range(self.cost):
             next_layer: list[Node] = []
@@ -77,6 +78,7 @@ class MDD:
                         if node_t_plus_1 is None:    # 创建节点
                             node_t_plus_1 = Node(next_pos, t + 1, [node_t], [])
                             next_layer.append(node_t_plus_1)  # 加入到下一层中
+                            all_nodes.append(node_t_plus_1)
                         else:    # 获取现有节点
                             if node_t not in node_t_plus_1.parents:
                                 node_t_plus_1.parents.append(node_t)
@@ -86,24 +88,8 @@ class MDD:
             layer = next_layer
 
         goal = next((node for node in layer if node.position == self.dest), None)
-        self.root = start_node if goal is not None else None
+        self.nodes = all_nodes if goal else []
 
-    def get_all_nodes(self) -> list[Node]:
-        """
-        一个不是非常高效的获取所有节点的代码
-        """
-        if self.root is None:
-            return []
-        else:
-            all_nodes = []
-            nodes = [self.root]
-            while nodes:
-                all_nodes += nodes
-                next_nodes = []
-                for node in nodes:
-                    next_nodes += [node for node in node.children if node not in next_nodes]
-                nodes = next_nodes
-            return all_nodes
 
 
 if __name__ == "__main__":
@@ -115,4 +101,4 @@ if __name__ == "__main__":
         [0, -1, 0, 0, 2]
     ], dtype=int)
     mdd = MDD(grid, 10, "4way")
-    print(grid, "\n", mdd.get_all_nodes())
+    print(grid, "\n", mdd.nodes)
